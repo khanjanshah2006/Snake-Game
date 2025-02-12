@@ -12,10 +12,7 @@ enum Difficulty { EASY, MEDIUM, HARD };
 int highScoreEasy = 0;
 int highScoreMedium = 0;
 int highScoreHard = 0;
-void setColor(WORD color) {
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(hConsole, color);
-}
+
 struct Node {
     int x, y;
     Node* next;
@@ -135,6 +132,7 @@ public:
         return -1;
     }
 };
+
 class Food {
 private:
     int x, y;
@@ -189,17 +187,14 @@ public:
                 if (j == 0)
                     output += "#";
                 if (i == snake.getY() && j == snake.getX())
-                    output += (gameOver ? "x" : "O");
+                    output += (gameOver ? "X" : "@");
                 else if (i == food.getY() && j == food.getX())
                     output += "F";
                 else {
                     bool printed = false;
-                    for (int k = 0; k < snake.getTailLength(); k++) {
-                        if (snake.getTailX(k) == j && snake.getTailY(k) == i) {
-                            output += (gameOver ? "x" : "o");
-                            printed = true;
-                            break;
-                        }
+                    if(snake.occupies(j,i)){
+                        output += gameOver ? "x" : "o";
+                        printed = true;
                     }
                     if (!printed)
                         output += " ";
@@ -227,11 +222,21 @@ public:
         if (_kbhit()) {
             char ch = _getch();
             switch (ch) {
-                case 'w': snake.changeDirection(UP); break;
-                case 's': snake.changeDirection(DOWN); break;
-                case 'a': snake.changeDirection(LEFT); break;
-                case 'd': snake.changeDirection(RIGHT); break;
-                case 'x': gameOver = true; break;
+                case 'w': 
+                case 'W':
+                    snake.changeDirection(UP); break;
+                case 's':
+                case 'S':
+                    snake.changeDirection(DOWN); break;
+                case 'a':
+                case 'A': 
+                    snake.changeDirection(LEFT); break;
+                case 'd':
+                case 'D':
+                    snake.changeDirection(RIGHT); break;
+                case 'x': 
+                case 'X':
+                    gameOver = true; break;
             }
         }
     }
@@ -325,11 +330,11 @@ int main() {
             cin >> postChoice;
             if (postChoice == 'p' || postChoice == 'P') {
                 continue;
-            } else if (postChoice == 'm' || postChoice == 'M') {
-                backToMenu = true;
             } else if (postChoice == 'x' || postChoice == 'X') {
                 exitGame = true;
                 break;
+            } else {
+                backToMenu = true;
             }
         }
     }
